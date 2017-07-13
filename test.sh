@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
 
-NAME=$(node -p "require('./package.json').name")
-
+VERSION=$(node -p "require('./package.json').version")
 TEST_RUNNER=./node_modules/node-qunit-phantomjs/bin/node-qunit-phantomjs
 
-echo "====== TESTING: ${NAME}"
+echo "====== TESTING: Version ${VERSION}"
 
 echo "======      Basics"
 $TEST_RUNNER ./test/spec/basics.html

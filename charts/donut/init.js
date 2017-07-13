@@ -3,10 +3,11 @@ JSC.prototype.DonutInit = function(options) {
   
   var config = {};
 
-  config.fontSize = options.fontSize || 23;
-  config.lineHeight = options.lineHeight || 15;
+  config.fontSize = options.fontSize || 38;
+  config.lineHeight = options.lineHeight || 20;
   config.colors = options.colors || null;
-  config.borderColor = options.borderColor || '#ffffff';
+  config.fontColor = options.fontColor || '#000000';
+  config.backgroundColor = options.backgroundColor || '#ffffff';
   config.width = options.size || 300;
   // Make same as width because the chart is square.
   config.height = config.width;

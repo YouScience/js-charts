@@ -68,13 +68,14 @@ A doughnut chart (or "donut" chart) is essentially a pie chart with the center a
 
 #### Chart Options
 
-| Name           | Description                                 |
-|----------------|---------------------------------------------|
-| `fontSize`     | (number) Font size for labels in pixels.    |
-| `lineHeight`   | (number) Line height for labels in pixels.  |
-| `colors`       | (array) Array of hex colors for slices.     |
-| `borderColor`  | (string) Hex color to use for slice border. |
-| `size`         | (number) Size of chart to render in pixels. |
+| Name               | Description                                         |
+|--------------------|-----------------------------------------------------|
+| `backgroundColor`  | (string) Hex color to use for SVG background color. |
+| `colors`           | (array) Array of hex colors for slices.             |
+| `fontColor`        | (string) Hex color to use for label font color.     |
+| `fontSize`         | (number) Text font size in pixels.                  |
+| `lineHeight`       | (number) Text line height in pixels.                |
+| `size`             | (number) Size of chart to render in pixels.         |
 
 #### Data Format
 
@@ -89,6 +90,17 @@ Donut chart data items have two key-value pairs, `name` (string) and `percent` (
   ...
 ]
 ```
+
+#### CSS Selectors
+
+| Selector              | Description                                                             |
+|-----------------------|-------------------------------------------------------------------------|
+| `.jsc-slice`          | All slice areas.                                                        |
+| `.jsc-slice--{index}` | Slice area by its corresponding data points' index in the data series.  |
+| `.jsc-svg-container`  | SVG element.                                                            |
+| `.jsc-text`           | All text elements.                                                      |
+| `.jsc-text--name`     | Text element for data point name.                                       |
+| `.jsc-text--percent`  | Text element for data point percent.                                    |
 
 #### Full Example
 

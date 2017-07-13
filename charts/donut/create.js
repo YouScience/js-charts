@@ -24,7 +24,8 @@ JSC.prototype.DonutCreate = function(data) {
     .attr({
       width: this._config.width,
       height: this._config.height,
-      class: 'svg-container'
+      class: 'jsc-svg-container',
+      style: 'background-color: ' + _self._config.backgroundColor
     })
     .append('g')
     .attr({
@@ -48,9 +49,9 @@ JSC.prototype.DonutCreate = function(data) {
 
   legend.append('text')
     .attr('text-anchor', 'middle')
-    .attr('y', this._config.lineHeight * -1)
+    .attr('y', (this._config.lineHeight * -1) + 10)
     .attr('class', function(d, i) {
-      return 'jsc-text jsc-text--' + i;
+      return 'jsc-text jsc-text--name jsc-text--' + i;
     })
     .attr('visibility', function(d, i) {
       return i == 0 ? 'visible' : 'hidden';
@@ -59,15 +60,15 @@ JSC.prototype.DonutCreate = function(data) {
       return d;
     })
     .style({
-      fill: '#929DAF',
+      fill: this._config.fontColor,
       'font-size': fontPx(this._config.fontSize)
     });
 
   legend.append('text')
     .attr('text-anchor', 'middle')
-    .attr('y', this._config.lineHeight)
+    .attr('y', this._config.lineHeight + 10)
     .attr('class', function(d, i) {
-      return 'jsc-text jsc-text--' + i;
+      return 'jsc-text jsc-text--percent jsc-text--' + i;
     })
     .attr('visibility', function(d, i) {
       return i == 0 ? 'visible' : 'hidden';
@@ -76,7 +77,7 @@ JSC.prototype.DonutCreate = function(data) {
       return _self._data[i].percent + '%';
     })
     .style({
-      fill: '#929DAF',
+      fill: this._config.fontColor,
       'font-size': fontPx(this._config.fontSize)
     });
 
@@ -87,7 +88,7 @@ JSC.prototype.DonutCreate = function(data) {
       return 'jsc-slice jsc-slice--' + i;
     })
     .attr('stroke', function(d, i) {
-      return i == 0 ? this.getAttribute('fill') : _self._config.borderColor;
+      return i == 0 ? this.getAttribute('fill') : _self._config.backgroundColor;
     })
     .attr('stroke-width', 4)
     .on('mouseenter', function(d, i) {
@@ -97,7 +98,7 @@ JSC.prototype.DonutCreate = function(data) {
         .attr('visibility', 'hidden');
 
       svg.selectAll('.jsc-slice')
-        .attr('stroke', _self._config.borderColor);
+        .attr('stroke', _self._config.backgroundColor);
 
       d3.select(this)
         .attr('stroke', function() {

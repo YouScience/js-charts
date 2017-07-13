@@ -24,7 +24,7 @@ JSC.prototype.DonutCreate = function(data) {
     .attr({
       width: this._config.width,
       height: this._config.height,
-      class: 'jsc-svg-container',
+      class: 'jsc-svg-container jsc-donut',
       style: 'background-color: ' + _self._config.backgroundColor
     })
     .append('g')

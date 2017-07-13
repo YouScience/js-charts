@@ -91,7 +91,7 @@ JSC.prototype.DonutCreate = function(data) {
       return i == 0 ? this.getAttribute('fill') : _self._config.backgroundColor;
     })
     .attr('stroke-width', 4)
-    .on('mouseenter', function(d, i) {
+    .on('mouseenter', debounce(function(d, i) {
       this.parentElement.insertBefore(this, this.parentElement.firstChild)
       
       svg.selectAll('.jsc-text')
@@ -107,7 +107,7 @@ JSC.prototype.DonutCreate = function(data) {
 
       svg.selectAll('.jsc-text--' + i)
         .attr('visibility', 'visible');
-    });
+    }, 80));
 
   function fontPx(value) {
     if ('number' != typeof value) {

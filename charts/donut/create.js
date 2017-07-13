@@ -87,7 +87,7 @@ JSC.prototype.DonutCreate = function(data) {
       return 'jsc-slice jsc-slice--' + i;
     })
     .attr('stroke', function(d, i) {
-      return i == 0 ? this.getAttribute('fill') : this._config.borderColor;
+      return i == 0 ? this.getAttribute('fill') : _self._config.borderColor;
     })
     .attr('stroke-width', 4)
     .on('mouseenter', function(d, i) {

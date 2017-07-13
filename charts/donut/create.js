@@ -97,7 +97,7 @@ JSC.prototype.DonutCreate = function(data) {
         .attr('visibility', 'hidden');
 
       svg.selectAll('.jsc-slice')
-        .attr('stroke', this._config.borderColor);
+        .attr('stroke', _self._config.borderColor);
 
       d3.select(this)
         .attr('stroke', function() {

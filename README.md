@@ -86,8 +86,8 @@ Donut chart data items have two key-value pairs, `name` (string) and `percent` (
 ```javascript
 [
   {
-    name: 'Internet Explorer',
-    percent: 40
+    name: 'Female',
+    percent: 35
   },
   ...
 ]
@@ -108,35 +108,35 @@ Donut chart data items have two key-value pairs, `name` (string) and `percent` (
 #### Full Example
 
 ```html
+<style>
+.jsc-text {
+  font-family: "museo-sans-rounded", "Open Sans", sans-serif;
+}
+.jsc-text--percent {
+  font-weight: bold;
+}
+</style>
+
 <div id="chart"></div>
 
 <script>
 var chart = new JSC({
   type: 'donut',
-  target: '#chart'
+  target: '#chart',
+  colors: ['#78CC85', '#697F94']
 });
 
 chart.create([
   {
-    name: 'Internet Explorer',
-    percent: 40
+    name: 'Female',
+    percent: 35
   },
   {
-    name: 'Chrome',
-    percent: 30
-  },
-  {
-    name: 'Safari',
-    percent: 15
-  },
-  {
-    name: 'Firefox',
-    percent: 9
-  },
-  {
-    name: 'Others',
-    percent: 6
+    name: 'Male',
+    percent: 65
   }
 ]);
 </script>
 ```
+
+![Donut Chart](docs/images/donut-chart.png)

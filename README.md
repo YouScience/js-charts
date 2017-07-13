@@ -60,7 +60,9 @@ chart.create([ ... ]);
 
 ## Chart Types
 
-There is presently only one chart type, the Donut chart type.
+| Name     | Description                                        |
+|----------|----------------------------------------------------|
+| `donut`  | Doughnut chart (see [Donut](#user-content-donut)). |
 
 ### Donut
 

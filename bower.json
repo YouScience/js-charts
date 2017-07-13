@@ -1,0 +1,7 @@
+{
+  "name": "js-charts",
+  "dependencies": {
+    "qunit": "^2.4.0",
+    "d3": "^3.3.13"
+  }
+}

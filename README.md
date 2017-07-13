@@ -2,15 +2,31 @@
 
 js-charts is a YouScience JavaScript library that allows developers to easily add charts to web apps.
 
-## Dependencies
+## Getting Started
 
-js-charts depends on D3.js, compatible with versions between 3.3.x and 3.5.x.
+Install package dependencies.
 
-## Install
+```
+npm install
+```
 
-Include `./jsc.js` of this project.
+Build the project. Output distribution file path is `./dist/jsc.js`.
 
-## API
+```
+npm run build
+```
+
+Run unit tests.
+
+```
+npm test
+```
+
+## External Dependencies
+
+Running js-charts on your site requires D3.js 3.3.x.
+
+## Usage
 
 Charts are instantiated using the `JSC` constructor which accepts one argument `options` (object). Options are described below.
 
@@ -19,19 +35,28 @@ Charts are instantiated using the `JSC` constructor which accepts one argument `
 | `type`       | (string) Chart type.      |
 | `target`     | (string) Target selector. |
 
+### Basic Example
+
 ```javascript
+// Instantiate a chart object.
 var chart = new JSC({
   type: 'donut',
-  target: '#chart'
+  target: '#chart',
+
+  ... chart options ...
+
 });
+
+// Create the chart with data.
+chart.create([ ... ]);
 ```
 
-The above code will create a chart object and its API methods are described below.
+## API
 
-| Method       | Description                                                                                       |
-|--------------|---------------------------------------------------------------------------------------------------|
-| `.create(a)` | Creates the SVG element and appends it to the target element. Takes one argument, `data` (array). |
-| `.render(a)` | Destroys and creates the chart element. Takes one argument, `data` (array).                       |
+| Method       | Description                                                                                                                    |
+|--------------|--------------------------------------------------------------------------------------------------------------------------------|
+| `.create(a)` | Creates the SVG element and appends it to the target element. Takes one argument, [`data`](#user-content-data-format) (array). |
+| `.render(a)` | Destroys and creates the chart element. Takes one argument, [`data`](#user-content-data-format) (array).                       |
 
 ## Chart Types
 
@@ -41,6 +66,16 @@ There is presently only one chart type, the Donut chart type.
 
 A doughnut chart (or "donut" chart) is essentially a pie chart with the center area removed. Use a Donut chart to express data in a way that does not focus of its size.
 
+#### Chart Options
+
+| Name           | Description                                 |
+|----------------|---------------------------------------------|
+| `fontSize`     | (number) Font size for labels in pixels.    |
+| `lineHeight`   | (number) Line height for labels in pixels.  |
+| `colors`       | (array) Array of hex colors for slices.     |
+| `borderColor`  | (string) Hex color to use for slice border. |
+| `size`         | (number) Size of chart to render in pixels. |
+
 #### Data Format
 
 Donut chart data items have two key-value pairs, `name` (string) and `percent` (number).
@@ -48,25 +83,10 @@ Donut chart data items have two key-value pairs, `name` (string) and `percent` (
 ```javascript
 [
   {
-    name: 'IE',
+    name: 'Internet Explorer',
     percent: 40
   },
-  {
-    name: 'Chrome',
-    percent: 30
-  },
-  {
-    name: 'Safari',
-    percent: 15
-  },
-  {
-    name: 'Firefox',
-    percent: 9
-  },
-  {
-    name: 'Others',
-    percent: 6
-  }
+  ...
 ]
 ```
 
@@ -83,7 +103,7 @@ var chart = new JSC({
 
 chart.create([
   {
-    name: 'IE',
+    name: 'Internet Explorer',
     percent: 40
   },
   {

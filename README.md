@@ -93,14 +93,15 @@ Donut chart data items have two key-value pairs, `name` (string) and `percent` (
 
 #### CSS Selectors
 
-| Selector              | Description                                                             |
-|-----------------------|-------------------------------------------------------------------------|
-| `.jsc-slice`          | All slice areas.                                                        |
-| `.jsc-slice--{index}` | Slice area by its corresponding data points' index in the data series.  |
-| `.jsc-svg-container`  | SVG element.                                                            |
-| `.jsc-text`           | All text elements.                                                      |
-| `.jsc-text--name`     | Text element for data point name.                                       |
-| `.jsc-text--percent`  | Text element for data point percent.                                    |
+| Selector              | Description                                                              |
+|-----------------------|--------------------------------------------------------------------------|
+| `.jsc-donut`          | SVG element.                                                             |
+| `.jsc-slice`          | All slice areas.                                                         |
+| `.jsc-slice--{index}` | Slice area by its corresponding data point's index in the data series.   |
+| `.jsc-text`           | All text elements.                                                       |
+| `.jsc-text--{index}`  | Text elements by its corresponding data point's index in the data series.|
+| `.jsc-text--name`     | Text element for data point name.                                        |
+| `.jsc-text--percent`  | Text element for data point percent.                                     |
 
 #### Full Example
 

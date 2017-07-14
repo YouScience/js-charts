@@ -90,24 +90,28 @@ JSC.prototype.DonutCreate = function(data) {
     .attr('stroke', function(d, i) {
       return i == 0 ? this.getAttribute('fill') : _self._config.backgroundColor;
     })
-    .attr('stroke-width', 4)
+    .attr('stroke-width', function(d, i) {
+      return i == 0 ? 4  : 5;
+    })
     .on('mouseenter', debounce(function(d, i) {
-      this.parentElement.insertBefore(this, this.parentElement.firstChild)
+      this.parentElement.insertBefore(this, this.parentElement.firstChild);
       
       svg.selectAll('.jsc-text')
         .attr('visibility', 'hidden');
 
       svg.selectAll('.jsc-slice')
+        .attr('stroke-width', 5)
         .attr('stroke', _self._config.backgroundColor);
 
       d3.select(this)
+        .attr('stroke-width', 4)
         .attr('stroke', function() {
           return this.getAttribute('fill');
         })
 
       svg.selectAll('.jsc-text--' + i)
         .attr('visibility', 'visible');
-    }, 80));
+    }, 100));
 
   function fontPx(value) {
     if ('number' != typeof value) {

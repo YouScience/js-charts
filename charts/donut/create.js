@@ -43,6 +43,33 @@ JSC.prototype.DonutCreate = function(data) {
       }
     });
 
+  var labelGroup = svg.append('svg:g')
+    .attr('class', 'label-group');
+
+  var sliceLabel = labelGroup.selectAll('text')
+    .data(pie(this._data));
+
+  var slicestore = [];
+
+  sliceLabel.enter().append('svg:text')
+    .attr('class', 'arc-label')
+    .attr('transform', function(d) {return 'translate(' + arc.centroid(d) + ')'; })
+    .attr('text-anchor', 'middle')
+    .attr('fill-opacity', '0.0')
+    .text(function(d, i) {
+      var rect = this.getBoundingClientRect();
+
+      slicestore.push({
+        index: i,
+        data: data[i],
+        coords: { x: rect.x, y: rect.y }
+      });
+
+      return '-';
+    });
+
+  sliceLabel.data(pie(this._data));
+
   var legend = svg.selectAll('.legend')
     .data(color.domain())
     .enter();
@@ -121,5 +148,15 @@ JSC.prototype.DonutCreate = function(data) {
     return value + 'px';
   }
 
-  return svg;
+  return {
+    svg: function() {
+      return svg;
+    },
+    data: function() {
+      return data;
+    },
+    slices: function() {
+      return slicestore;
+    }
+  };
 };

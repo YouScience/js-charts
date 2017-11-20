@@ -1,6 +1,10 @@
 JSC.prototype.DonutCreate = function(data) {
   var _self = this;
 
+  data = data.sort(function(a, b) {
+    return a.percent < b.percent;
+  });
+
   this._data = data || [];
 
   var pie = d3.layout.pie()
@@ -61,6 +65,7 @@ JSC.prototype.DonutCreate = function(data) {
 
       slicestore.push({
         index: i,
+        selected: ( 0 == i ),
         data: data[i],
         coords: { x: rect.x, y: rect.y }
       });
@@ -138,6 +143,8 @@ JSC.prototype.DonutCreate = function(data) {
 
       svg.selectAll('.jsc-text--' + i)
         .attr('visibility', 'visible');
+
+      selectSlice(i);
     }, 100));
 
   function fontPx(value) {
@@ -146,6 +153,12 @@ JSC.prototype.DonutCreate = function(data) {
     }
 
     return value + 'px';
+  }
+
+  function selectSlice(sliceIndex) {
+    slicestore.forEach(function(slice, index) {
+      slice.selected = ( slice.index === sliceIndex );
+    });
   }
 
   return {

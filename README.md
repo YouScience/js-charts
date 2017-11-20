@@ -71,14 +71,15 @@ A doughnut chart (or "donut" chart) is essentially a pie chart with the center a
 
 #### Chart Options
 
-| Name               | Description                                         |
-|--------------------|-----------------------------------------------------|
-| `backgroundColor`  | (string) Hex color to use for SVG background color. |
-| `colors`           | (array) Array of hex colors for slices.             |
-| `fontColor`        | (string) Hex color to use for label font color.     |
-| `fontSize`         | (number) Text font size in pixels.                  |
-| `lineHeight`       | (number) Text line height in pixels.                |
-| `size`             | (number) Size of chart to render in pixels.         |
+| Name               | Description                                            |
+|--------------------|--------------------------------------------------------|
+| `backgroundColor`  | (string) Hex color to use for SVG background color.    |
+| `colors`           | (array) Array of hex colors for slices.                |
+| `fontColor`        | (string) Hex color to use for label font color.        |
+| `fontSize`         | (number) Text font size in pixels.                     |
+| `lineHeight`       | (number) Text line height in pixels.                   |
+| `size`             | (number) Size of chart to render in pixels.            |
+| `selectevent`      | (string) DOM event name that triggers slice selection. |
 
 #### Data Format
 

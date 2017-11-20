@@ -11,6 +11,7 @@ JSC.prototype.DonutInit = function(options) {
   config.width = options.size || 300;
   // Make same as width because the chart is square.
   config.height = config.width;
+  config.selectevent = config.selectevent || 'mouseenter';
 
   this._config = config;
 };

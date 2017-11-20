@@ -120,7 +120,7 @@ JSC.prototype.DonutCreate = function(data) {
     .attr('stroke-width', function(d, i) {
       return i == 0 ? 4  : 5;
     })
-    .on('mouseenter', debounce(function(d, i) {
+    .on(this._config.selectevent, debounce(function(d, i) {
       this.parentElement.insertBefore(this, this.parentElement.firstChild);
       
       svg.selectAll('.jsc-text')

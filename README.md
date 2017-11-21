@@ -71,15 +71,16 @@ A doughnut chart (or "donut" chart) is essentially a pie chart with the center a
 
 #### Chart Options
 
-| Name               | Description                                            |
-|--------------------|--------------------------------------------------------|
-| `backgroundColor`  | (string) Hex color to use for SVG background color.    |
-| `colors`           | (array) Array of hex colors for slices.                |
-| `fontColor`        | (string) Hex color to use for label font color.        |
-| `fontSize`         | (number) Text font size in pixels.                     |
-| `lineHeight`       | (number) Text line height in pixels.                   |
-| `size`             | (number) Size of chart to render in pixels.            |
-| `selectevent`      | (string) DOM event name that triggers slice selection. |
+| Name               | Description                                                                          |
+|--------------------|--------------------------------------------------------------------------------------|
+| `backgroundColor`  | (string) Hex color to use for SVG background color.                                  |
+| `colors`           | (array) Array of hex colors for slices.                                              |
+| `fontColor`        | (string) Hex color to use for label font color.                                      |
+| `fontSize`         | (number) Text font size in pixels.                                                   |
+| `lineHeight`       | (number) Text line height in pixels.                                                 |
+| `size`             | (number) Size of chart to render in pixels.                                          |
+| `selectevent`      | (string) DOM event name that triggers slice selection.                               |
+| `title`            | (string) The title of the chart. The title will replace the name and percent labels. |
 
 #### Data Format
 
@@ -104,6 +105,7 @@ Donut chart data items have two key-value pairs, `name` (string) and `percent` (
 | `.jsc-slice--{index}` | Slice area by its corresponding data point's index in the data series.   |
 | `.jsc-text`           | All text elements.                                                       |
 | `.jsc-text--{index}`  | Text elements by its corresponding data point's index in the data series.|
+| `.jsc-text--title`    | Text element for title if present in the config.                         |
 | `.jsc-text--name`     | Text element for data point name.                                        |
 | `.jsc-text--percent`  | Text element for data point percent.                                     |
 

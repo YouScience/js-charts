@@ -79,39 +79,59 @@ JSC.prototype.DonutCreate = function(data) {
     .data(color.domain())
     .enter();
 
-  legend.append('text')
-    .attr('text-anchor', 'middle')
-    .attr('y', (this._config.lineHeight * -1) + 10)
-    .attr('class', function(d, i) {
-      return 'jsc-text jsc-text--name jsc-text--' + i;
-    })
-    .attr('visibility', function(d, i) {
-      return i == 0 ? 'visible' : 'hidden';
-    })
-    .text(function(d) {
-      return d;
-    })
-    .style({
-      fill: this._config.fontColor,
-      'font-size': fontPx(this._config.fontSize)
-    });
 
-  legend.append('text')
-    .attr('text-anchor', 'middle')
-    .attr('y', this._config.lineHeight + 10)
-    .attr('class', function(d, i) {
-      return 'jsc-text jsc-text--percent jsc-text--' + i;
-    })
-    .attr('visibility', function(d, i) {
-      return i == 0 ? 'visible' : 'hidden';
-    })
-    .text(function(d, i) {
-      return _self._data[i].percent + '%';
-    })
-    .style({
-      fill: this._config.fontColor,
-      'font-size': fontPx(this._config.fontSize)
-    });
+  if (this._config.title) {
+    legend.append('text')
+      .attr('text-anchor', 'middle')
+      .attr('y', (this._config.lineHeight * -1) + 30)
+      .attr('class', function(d, i) {
+        return 'jsc-text jsc-text--title jsc-text--' + i;
+      })
+      .attr('visibility', function(d, i) {
+        return i == 0 ? 'visible' : 'hidden';
+      })
+      .text(function(d) {
+        return _self._config.title;
+      })
+      .style({
+        fill: this._config.fontColor,
+        'font-size': fontPx(this._config.fontSize)
+      });
+  } else {
+    legend.append('text')
+      .attr('text-anchor', 'middle')
+      .attr('y', (this._config.lineHeight * -1) + 10)
+      .attr('class', function(d, i) {
+        return 'jsc-text jsc-text--name jsc-text--' + i;
+      })
+      .attr('visibility', function(d, i) {
+        return i == 0 ? 'visible' : 'hidden';
+      })
+      .text(function(d) {
+        return d;
+      })
+      .style({
+        fill: this._config.fontColor,
+        'font-size': fontPx(this._config.fontSize)
+      });
+
+    legend.append('text')
+      .attr('text-anchor', 'middle')
+      .attr('y', this._config.lineHeight + 10)
+      .attr('class', function(d, i) {
+        return 'jsc-text jsc-text--percent jsc-text--' + i;
+      })
+      .attr('visibility', function(d, i) {
+        return i == 0 ? 'visible' : 'hidden';
+      })
+      .text(function(d, i) {
+        return _self._data[i].percent + '%';
+      })
+      .style({
+        fill: this._config.fontColor,
+        'font-size': fontPx(this._config.fontSize)
+      });
+  }
 
   path.attr('fill', function(d, i) {
       return color(i);

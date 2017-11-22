@@ -163,16 +163,17 @@ JSC.prototype.DonutCreate = function(data) {
     .attr('text-anchor', 'middle')
     .attr('fill-opacity', '0.0')
     .text(function(d, i) {
-      var rect = this.getBoundingClientRect();
+      var crect = this.getBoundingClientRect();
+      var prect = this.ownerSVGElement.getBoundingClientRect();
 
       slicestore.push({
         index: i,
         selected: ( 0 == i ),
         data: data[i],
-        coords: { x: rect.x, y: rect.y },
+        coords: { x: crect.x - prect.x, y: crect.y - prect.y },
         side: {
-          left: rect.x < _self._config.width / 2,
-          right: rect.x >= _self._config.width / 2
+          left: crect.x - prect.x < _self._config.width / 2,
+          right: crect.x - prect.x >= _self._config.width / 2
         },
         fill: colorstore[i]
       });

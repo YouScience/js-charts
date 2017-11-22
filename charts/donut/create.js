@@ -211,7 +211,11 @@ JSC.prototype.DonutCreate = function(data) {
         pos[0] = innerRadius * 0.95 * (midAngle(d) < Math.PI ? 1 : -1);
         return [ arc.centroid(d), arc.centroid(d), pos ];    
       })
-      .attr('style', 'stroke-width: 1px; fill: none;')
+      .attr('class', function(d, i) {
+        return 'jsc-label-line jsc-label-line--' + i;
+      })
+      .attr('stroke-width', '1')
+      .attr('fill', 'none')
       .attr('stroke', function(d, i) {
         return color(i);
       });

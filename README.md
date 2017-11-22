@@ -82,6 +82,7 @@ A doughnut chart (or "donut" chart) is essentially a pie chart with the center a
 | `selectevent`      | (string) DOM event name that triggers slice selection.                               |
 | `onselect`         | (function) Provides a way to call a function when the select event happens.          |
 | `title`            | (string) The title of the chart. The title will replace the name and percent labels. |
+| `labels`           | (boolean) Displays floating labels surrounding the chart.                            |
 
 #### Data Format
 

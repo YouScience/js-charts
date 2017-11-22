@@ -16,6 +16,7 @@ JSC.prototype.DonutInit = function(options) {
   config.onselect = options.onselect || function noop() {};
   config.onselectblur = options.onselectblur || function noop() {};
   config.title = options.title;
+  config.labels = options.labels || false;
 
   this._config = config;
 };

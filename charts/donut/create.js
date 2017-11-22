@@ -161,7 +161,7 @@ JSC.prototype.DonutCreate = function(data) {
     _self._config.onselectblur.call(svg, findSlice(i));
   }
 
-  if (this._config.title) {
+  if (this._config.labels) {
     var labels = svg.append('svg:g')
       .attr('class', 'labels');
 

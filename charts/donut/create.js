@@ -104,10 +104,22 @@ JSC.prototype.DonutCreate = function(data) {
       });
   }
 
+  var slicestore = [];
+  var colorstore = {};
+
   path.attr('fill', function(d, i) {
-      return color(i);
+      var fill = color(i);
+      colorstore[i] = fill;
+      return fill;
     })
     .attr('class', function(d, i) {
+      slicestore.push({
+        index: i,
+        selected: ( 0 == i ),
+        data: data[i],
+        fill: colorstore[i]
+      });
+
       return 'jsc-slice jsc-slice--' + i;
     })
     .attr('stroke', function(d, i) {
@@ -140,11 +152,13 @@ JSC.prototype.DonutCreate = function(data) {
         .attr('visibility', 'visible');
     }
 
-    _self._config.onselect.call(svg, d, i);
+    selectSlice(i);
+
+    _self._config.onselect.call(svg, findSlice(i));
   }
 
   function selectblurhandler(d, i) {
-    _self._config.onselectblur.call(svg, d, i);
+    _self._config.onselectblur.call(svg, findSlice(i));
   }
 
   if (this._config.title) {
@@ -215,12 +229,33 @@ JSC.prototype.DonutCreate = function(data) {
     return d.startAngle + (d.endAngle - d.startAngle) / 2;
   }
 
+  function selectSlice(sliceIndex) {
+    slicestore.forEach(function(slice, index) {
+      slice.selected = ( slice.index === sliceIndex );
+    });
+  }
+
+  function findSlice(sliceIndex) {
+    var result = null;
+
+    slicestore.forEach(function(slice, index) {
+      if ( slice.index === sliceIndex ) {
+        result = slice
+      }
+    });
+
+    return result;
+  }
+
   return {
     svg: function() {
       return svg;
     },
     data: function() {
       return data;
+    },
+    slices: function() {
+      return slicestore;
     }
   };
 };

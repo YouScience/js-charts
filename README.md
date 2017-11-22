@@ -57,6 +57,7 @@ chart.create([ ... ]);
 |--------------|--------------------------------------------------------------------------------------------------------------------------------|
 | `.create(a)` | Creates the SVG element and appends it to the target element. Takes one argument, [`data`](#user-content-data-format) (array). |
 | `.render(a)` | Destroys and creates the chart element. Takes one argument, [`data`](#user-content-data-format) (array).                       |
+| `.slices()`  | Returns an array containing slice info (if applicable) like index, coordinates, fill color, and data sample.                   |
 
 ## Chart Types
 

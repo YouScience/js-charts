@@ -124,9 +124,6 @@ JSC.prototype.DonutCreate = function(data) {
     })
     .on(this._config.selectevent, debounce(function(d, i) {
       this.parentElement.insertBefore(this, this.parentElement.firstChild);
-      
-      svg.selectAll('.jsc-text')
-        .attr('visibility', 'hidden');
 
       svg.selectAll('.jsc-slice')
         .attr('stroke-width', 5)
@@ -137,12 +134,17 @@ JSC.prototype.DonutCreate = function(data) {
         .attr('stroke', function() {
           return this.getAttribute('fill');
         })
+      
+      if (!_self._config.title) {
+        svg.selectAll('.jsc-text')
+          .attr('visibility', 'hidden');
 
-      svg.selectAll('.jsc-text--' + i)
-        .attr('visibility', 'visible');
+        svg.selectAll('.jsc-text--' + i)
+          .attr('visibility', 'visible');
+      }
 
       selectSlice(i);
-      
+
       _self._config.onselect.call(svg, findSlice(i));
     }, 100));
 

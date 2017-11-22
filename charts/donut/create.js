@@ -47,38 +47,9 @@ JSC.prototype.DonutCreate = function(data) {
       }
     });
 
-  var labelGroup = svg.append('svg:g')
-    .attr('class', 'label-group');
-
-  var sliceLabel = labelGroup.selectAll('text')
-    .data(pie(this._data));
-
-  var slicestore = [];
-
-  sliceLabel.enter().append('svg:text')
-    .attr('class', 'arc-label')
-    .attr('transform', function(d) {return 'translate(' + arc.centroid(d) + ')'; })
-    .attr('text-anchor', 'middle')
-    .attr('fill-opacity', '0.0')
-    .text(function(d, i) {
-      var rect = this.getBoundingClientRect();
-
-      slicestore.push({
-        index: i,
-        selected: ( 0 == i ),
-        data: data[i],
-        coords: { x: rect.x, y: rect.y }
-      });
-
-      return '-';
-    });
-
-  sliceLabel.data(pie(this._data));
-
   var legend = svg.selectAll('.legend')
     .data(color.domain())
     .enter();
-
 
   if (this._config.title) {
     legend.append('text')
@@ -133,8 +104,14 @@ JSC.prototype.DonutCreate = function(data) {
       });
   }
 
+  var colorstore = {};
+
   path.attr('fill', function(d, i) {
-      return color(i);
+      var fill = color(i);
+
+      colorstore[i] = fill;
+
+      return fill;
     })
     .attr('class', function(d, i) {
       return 'jsc-slice jsc-slice--' + i;
@@ -165,7 +142,43 @@ JSC.prototype.DonutCreate = function(data) {
         .attr('visibility', 'visible');
 
       selectSlice(i);
+      
+      _self._config.onselect.call(svg, findSlice(i));
     }, 100));
+
+
+  var labelGroup = svg.append('svg:g')
+    .attr('class', 'label-group');
+
+  var sliceLabel = labelGroup.selectAll('text')
+    .data(pie(this._data));
+
+  var slicestore = [];
+
+  sliceLabel.enter().append('svg:text')
+    .attr('class', 'arc-label')
+    .attr('transform', function(d) {return 'translate(' + arc.centroid(d) + ')'; })
+    .attr('text-anchor', 'middle')
+    .attr('fill-opacity', '0.0')
+    .text(function(d, i) {
+      var rect = this.getBoundingClientRect();
+
+      slicestore.push({
+        index: i,
+        selected: ( 0 == i ),
+        data: data[i],
+        coords: { x: rect.x, y: rect.y },
+        side: {
+          left: rect.x < _self._config.width / 2,
+          right: rect.x >= _self._config.width / 2
+        },
+        fill: colorstore[i]
+      });
+
+      return '-';
+    });
+
+  sliceLabel.data(pie(this._data));
 
   function fontPx(value) {
     if ('number' != typeof value) {
@@ -179,6 +192,18 @@ JSC.prototype.DonutCreate = function(data) {
     slicestore.forEach(function(slice, index) {
       slice.selected = ( slice.index === sliceIndex );
     });
+  }
+
+  function findSlice(sliceIndex) {
+    var result = null;
+
+    slicestore.forEach(function(slice, index) {
+      if ( slice.index === sliceIndex ) {
+        result = slice
+      }
+    });
+
+    return result;
   }
 
   return {

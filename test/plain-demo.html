@@ -14,7 +14,7 @@
 
 <script>
 ;(function() {
-  var chart = new JSC({ type: 'donut', target: '#chart', selectevent: 'click', title: 'My Talents' });
+  var chart = new JSC({ type: 'donut', target: '#chart', selectevent: 'click', onselect: function(slice) { console.log(slice); } });
 
   var result = chart.create([
     {

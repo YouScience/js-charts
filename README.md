@@ -57,7 +57,7 @@ chart.create([ ... ]);
 |--------------|--------------------------------------------------------------------------------------------------------------------------------|
 | `.create(a)` | Creates the SVG element and appends it to the target element. Takes one argument, [`data`](#user-content-data-format) (array). |
 | `.render(a)` | Destroys and creates the chart element. Takes one argument, [`data`](#user-content-data-format) (array).                       |
-| `.slices()`  | Returns an array containing slice info like index, coordinates, and data sample.                                               |
+| `.slices()`  | Returns an array containing slice info (if applicable) like index, coordinates, fill color, and data sample.                   |
 
 ## Chart Types
 
@@ -80,6 +80,7 @@ A doughnut chart (or "donut" chart) is essentially a pie chart with the center a
 | `lineHeight`       | (number) Text line height in pixels.                                                 |
 | `size`             | (number) Size of chart to render in pixels.                                          |
 | `selectevent`      | (string) DOM event name that triggers slice selection.                               |
+| `onselect`         | (function) Provides a way to call a function when the select event happens.          |
 | `title`            | (string) The title of the chart. The title will replace the name and percent labels. |
 
 #### Data Format

@@ -26,14 +26,14 @@ JSC.prototype.DonutCreate = function(data) {
   var svg = this._svg = d3.select(this._target)
     .append('svg')
     .attr({
-      width: this._config.title ? this._config.width * 2.3 : this._config.width,
+      width: this._config.labels ? this._config.width * 2.3 : this._config.width,
       height: this._config.height,
       class: 'jsc-svg-container jsc-donut',
       style: 'background-color: ' + _self._config.backgroundColor
     })
     .append('g')
     .attr({
-      transform: 'translate(' + ( this._config.title ? ( this._config.width / 2 ) * 2.3 : this._config.width / 2 ) + ',' + this._config.height / 2 + ')'
+      transform: 'translate(' + ( this._config.labels ? ( this._config.width / 2 ) * 2.3 : this._config.width / 2 ) + ',' + this._config.height / 2 + ')'
     });
 
   var path = svg.selectAll('path')

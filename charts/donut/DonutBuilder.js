@@ -28,7 +28,9 @@ class DonutBuilder {
 
     d3.select(this)
       .attr('stroke-width', 4)
-      .attr('stroke', () => this.getAttribute('fill'))
+      .attr('stroke', function() {
+        return this.getAttribute('fill');
+      });
 
     if (!this.title) {
       svg.selectAll('.jsc-text')
@@ -52,7 +54,7 @@ class DonutBuilder {
       throw new Error('Invalid fontSize value');
     }
 
-    return `value${px}`;
+    return `${value}px`;
   }
 
   midAngle(d) {
@@ -78,32 +80,36 @@ class DonutBuilder {
   }
 
   create(data = []) {
+    const self = this;
+
     data = data.sort((a, b) => (a.percent < b.percent));
 
     const pie = d3.layout.pie()
-      .value((d) => d.percent)
+      .value(function(d) {
+        return d.percent;
+      })
       .sort(null);
 
-    const outerRadius = this.width / 3;
-    const innerRadius = this.width / 2.3;
+    const outerRadius = self.width / 3;
+    const innerRadius = self.width / 2.3;
 
-    const color = this.colors ? d3.scale.ordinal().range(this.colors) : d3.scale.category20();
+    const color = self.colors ? d3.scale.ordinal().range(self.colors) : d3.scale.category20();
 
     const arc = d3.svg.arc()
       .outerRadius(outerRadius)
       .innerRadius(innerRadius);
 
-    const svg = d3.select(this._target)
+    const svg = d3.select(self.target)
       .append('svg')
       .attr({
-        width: this.labels ? this.width * 2.3 : this.width,
-        height: this.height,
+        width: (self.labels ? self.width * 2.3 : self.width),
+        height: self.height,
         class: 'jsc-svg-container jsc-donut',
-        style: 'background-color: ' + this.backgroundColor
+        style: 'background-color: ' + self.backgroundColor
       })
       .append('g')
       .attr({
-        transform: 'translate(' + ( this.labels ? ( this.width / 2 ) * 2.3 : this.width / 2 ) + ',' + this.height / 2 + ')'
+        transform: 'translate(' + ( self.labels ? ( self.width / 2 ) * 2.3 : self.width / 2 ) + ',' + self.height / 2 + ')'
       });
 
     const path = svg.selectAll('path')
@@ -112,45 +118,65 @@ class DonutBuilder {
       .append('path')
       .attr({
         d: arc,
-        fill: (d, i) => color(d.data.name),
+        fill: function(d, i) {
+          return color(d.data.name);
+        },
       });
 
     const legend = svg.selectAll('.legend')
       .data(color.domain())
       .enter();
 
-    if (this.title) {
+    if (self.title) {
       legend.append('text')
         .attr('text-anchor', 'middle')
-        .attr('y', (this.lineHeight * -1) + 30)
-        .attr('class', (d, i) => `jsc-text jsc-text--title jsc-text--${i}`)
-        .attr('visibility', (d, i) => (i == 0 ? 'visible' : 'hidden'))
-        .text((d) => this.title)
+        .attr('y', (self.lineHeight * -1) + 30)
+        .attr('class', function(d, i) {
+          return `jsc-text jsc-text--title jsc-text--${i}`;
+        })
+        .attr('visibility', function(d, i) {
+          return i == 0 ? 'visible' : 'hidden';
+        })
+        .text(function(d) {
+          return self.title;
+        })
         .style({
-          fill: this.fontColor,
-          'font-size': this.fontPx(this.fontSize)
+          fill: self.fontColor,
+          'font-size': self.fontPx(self.fontSize)
         });
     } else {
       legend.append('text')
         .attr('text-anchor', 'middle')
-        .attr('y', (this.lineHeight * -1) + 10)
-        .attr('class', (d, i) => `jsc-text jsc-text--name jsc-text--${i}`)
-        .attr('visibility', (d, i) => (i == 0 ? 'visible' : 'hidden'))
-        .text((d) => d)
+        .attr('y', (self.lineHeight * -1) + 10)
+        .attr('class', function(d, i) {
+          return `jsc-text jsc-text--name jsc-text--${i}`;
+        })
+        .attr('visibility', function(d, i) {
+          return (i == 0 ? 'visible' : 'hidden');
+        })
+        .text(function(d) {
+          return d;
+        })
         .style({
-          fill: this.fontColor,
-          'font-size': this.fontPx(this.fontSize)
+          fill: self.fontColor,
+          'font-size': self.fontPx(self.fontSize)
         });
 
       legend.append('text')
         .attr('text-anchor', 'middle')
-        .attr('y', this.lineHeight + 10)
-        .attr('class', (d, i) => `jsc-text jsc-text--percent jsc-text--${i}`)
-        .attr('visibility', (d, i) => (i == 0 ? 'visible' : 'hidden'))
-        .text((d, i) => data[i].percent + '%')
+        .attr('y', self.lineHeight + 10)
+        .attr('class', function(d, i) {
+          return `jsc-text jsc-text--percent jsc-text--${i}`;
+        })
+        .attr('visibility', function(d, i) {
+          return i == 0 ? 'visible' : 'hidden';
+        })
+        .text(function(d, i) {
+          data[i].percent + '%';
+        })
         .style({
-          fill: this.fontColor,
-          'font-size': this.fontPx(this.fontSize)
+          fill: self.fontColor,
+          'font-size': self.fontPx(self.fontSize)
         });
     }
 
@@ -160,6 +186,7 @@ class DonutBuilder {
     path.attr('fill', function(d, i) {
         const fill = color(i);
         colorstore[i] = fill;
+
         return fill;
       })
       .attr('class', function(d, i) {
@@ -170,65 +197,81 @@ class DonutBuilder {
           fill: colorstore[i]
         });
 
-        return 'jsc-slice jsc-slice--' + i;
+        return `jsc-slice jsc-slice--${i}`;
       })
-      .attr('stroke', (d, i) => (i == 0 ? this.getAttribute('fill') : this.backgroundColor))
-      .attr('stroke-width', (d, i) => (i == 0 ? 4  : 5))
-      .on(this.selectevent, debounce(this.selecthandler, 100))
-      .on(this.selectblurevent, debounce(this.selectblurhandler, 100));
+      .attr('stroke', function(d, i) {
+        return i == 0 ? this.getAttribute('fill') : self.backgroundColor;
+      })
+      .attr('stroke-width', function(d, i) {
+        return i == 0 ? 4  : 5;
+      })
+      .on(self.selectevent, debounce(self.selecthandler, 100))
+      .on(self.selectblurevent, debounce(self.selectblurhandler, 100));
 
-    if (this.labels) {
+    if (self.labels) {
       const labels = svg.append('svg:g')
         .attr('class', 'labels');
 
       const text = labels.selectAll('text')
-        .data(pie(data), (d) => d.data.name);
+        .data(pie(data), function(d) {
+          return d.data.name;
+        });
 
       text.enter()
         .append('text')
-        .attr('class', (d, i) => `jsc-label jsc-label--${i}`)
+        .attr('class', function(d, i) {
+          return `jsc-label jsc-label--${i}`;
+        })
         .attr('dy', '.35em')
-        .text((d) => d.data.name)
-        .on(this.selectevent, debounce((d, i) => {
+        .text(function(d) {
+          return d.data.name;
+        })
+        .on(self.selectevent, debounce(function(d, i) {
           const slice = svg.select(`.jsc-slice--${i}`);
 
-          this.selecthandler.apply(slice[0][0], [d, i], svg);
+          self.selecthandler.apply(slice[0][0], [d, i], svg);
         }, 100))
-        .on(this.selectblurevent, debounce((d, i) => {
+        .on(self.selectblurevent, debounce(function(d, i) {
           const slice = svg.select(`.jsc-slice--${i}`);
 
-          this.selectblurhandler.apply(slice[0][0], [d, i], svg);
+          self.selectblurhandler.apply(slice[0][0], [d, i], svg);
         }, 100));
 
-      text.attr('transform', (d) => {
+      text.attr('transform', function(d) {
           const pos = arc.centroid(d);
-          pos[0] = innerRadius * (this.midAngle(d) < Math.PI ? 1 : -1);
+          pos[0] = innerRadius * (self.midAngle(d) < Math.PI ? 1 : -1);
 
           return `translate(${pos})`;
         })
-        .attr('text-anchor', (d) => {
-          return this.midAngle(d) < Math.PI ? 'start':'end';
+        .attr('text-anchor', function(d) {
+          return self.midAngle(d) < Math.PI ? 'start':'end';
         });
 
       const lines = svg.append('g')
         .attr('class', 'lines');
 
       const polyline = lines.selectAll('polyline')
-        .data(pie(data), (d) => d.data.name);
+        .data(pie(data), function(d) {
+          return d.data.name;
+        });
 
       polyline.enter()
         .append('polyline');
 
-      polyline.attr('points', (d) => {
+      polyline.attr('points', function(d) {
           const pos = arc.centroid(d);
-          pos[0] = innerRadius * 0.95 * (this.midAngle(d) < Math.PI ? 1 : -1);
+          pos[0] = innerRadius * 0.95 * (self.midAngle(d) < Math.PI ? 1 : -1);
 
           return [ arc.centroid(d), arc.centroid(d), pos ];
         })
-        .attr('class', (d, i) => `jsc-label-line jsc-label-line--${i}`)
+        .attr('class', function(d, i) {
+          return `jsc-label-line jsc-label-line--${i}`;
+        })
         .attr('stroke-width', '1')
         .attr('fill', 'none')
-        .attr('stroke', (d, i) => color(i));
+        .attr('stroke', function(d, i) {
+          return color(i);
+        });
     }
 
     return {

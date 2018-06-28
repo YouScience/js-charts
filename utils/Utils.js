@@ -2,10 +2,10 @@
 const debounce = (func, wait, immediate) => {
   let timeout;
 
-  return () => {
+  return function() {
     const context = this, args = arguments;
 
-    const later = () => {
+    const later = function() {
       timeout = null;
 
       if (!immediate) {

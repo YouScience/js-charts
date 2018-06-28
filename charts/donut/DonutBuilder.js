@@ -19,12 +19,12 @@ class DonutBuilder {
     this.labels = options.labels;
   }
 
-  selecthandler(d, i, svg) {
+  selecthandler(self, svg, d, i) {
     this.parentElement.insertBefore(this, this.parentElement.firstChild);
 
     svg.selectAll('.jsc-slice')
       .attr('stroke-width', 5)
-      .attr('stroke', this.backgroundColor);
+      .attr('stroke', self.backgroundColor);
 
     d3.select(this)
       .attr('stroke-width', 4)
@@ -32,7 +32,7 @@ class DonutBuilder {
         return this.getAttribute('fill');
       });
 
-    if (!this.title) {
+    if (!self.title) {
       svg.selectAll('.jsc-text')
         .attr('visibility', 'hidden');
 
@@ -40,13 +40,13 @@ class DonutBuilder {
         .attr('visibility', 'visible');
     }
 
-    this.selectSlice(i);
+    self.selectSlice(i);
 
-    this.onselect.call(svg, this.findSlice(i));
+    self.onselect.call(svg, self.findSlice(i));
   }
 
-  selectblurhandler(d, i, svg) {
-    this.onselectblur.call(svg, this.findSlice(i));
+  selectblurhandler(self, svg, d, i) {
+    self.onselectblur.call(svg, self.findSlice(i));
   }
 
   fontPx(value) {
@@ -205,8 +205,12 @@ class DonutBuilder {
       .attr('stroke-width', function(d, i) {
         return i == 0 ? 4  : 5;
       })
-      .on(self.selectevent, debounce(self.selecthandler, 100))
-      .on(self.selectblurevent, debounce(self.selectblurhandler, 100));
+      .on(self.selectevent, debounce(function() {
+        self.selecthandler.apply(this, [self, svg, ...arguments]);
+      }, 100))
+      .on(self.selectblurevent, debounce(function() {
+        self.selectblurhandler.apply(this, [self, svg, ...arguments]);
+      }, 100));
 
     if (self.labels) {
       const labels = svg.append('svg:g')

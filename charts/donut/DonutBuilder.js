@@ -17,17 +17,23 @@ class DonutBuilder {
     this.onselectblur = options.onselectblur || (() => {});
     this.title = options.title;
     this.labels = options.labels;
+    this.outerRadiusRatio = options.outerRadiusRatio || 3;
+    this.innerRadiusRatio = options.innerRadiusRatio || 2.3;
+    this.strokeColor = options.strokeColor || '#FFFFFF';
+    this.strokeWidth = options.strokeWidth || 5;
+    this.initialStrokeWidth = options.initialStrokeWidth || 4;
+    this.activeShadow = options.activeShadow || false;
   }
 
-  selecthandler(self, svg, d, i) {
+  selecthandler(self, slicestore, svg, d, i) {
     this.parentElement.insertBefore(this, this.parentElement.firstChild);
 
     svg.selectAll('.jsc-slice')
-      .attr('stroke-width', 5)
-      .attr('stroke', self.backgroundColor);
+      .attr('stroke-width', self.strokeWidth)
+      .attr('stroke', self.strokeColor);
 
     d3.select(this)
-      .attr('stroke-width', 4)
+      .attr('stroke-width', self.initialStrokeWidth)
       .attr('stroke', function() {
         return this.getAttribute('fill');
       });
@@ -40,13 +46,13 @@ class DonutBuilder {
         .attr('visibility', 'visible');
     }
 
-    self.selectSlice(i);
+    self.selectSlice(slicestore, i);
 
-    self.onselect.call(svg, self.findSlice(i));
+    self.onselect.call(svg, self.findSlice(slicestore, i));
   }
 
-  selectblurhandler(self, svg, d, i) {
-    self.onselectblur.call(svg, self.findSlice(i));
+  selectblurhandler(self, slicestore, svg, d, i) {
+    self.onselectblur.call(svg, self.findSlice(slicestore, i));
   }
 
   fontPx(value) {
@@ -61,13 +67,13 @@ class DonutBuilder {
     return d.startAngle + (d.endAngle - d.startAngle) / 2;
   }
 
-  selectSlice(sliceIndex) {
+  selectSlice(slicestore, sliceIndex) {
     slicestore.forEach((slice, index) => {
       slice.selected = ( slice.index === sliceIndex );
     });
   }
 
-  findSlice(sliceIndex) {
+  findSlice(slicestore, sliceIndex) {
     let result = null;
 
     slicestore.forEach((slice, index) => {
@@ -90,8 +96,8 @@ class DonutBuilder {
       })
       .sort(null);
 
-    const outerRadius = self.width / 3;
-    const innerRadius = self.width / 2.3;
+    const outerRadius = self.width / self.outerRadiusRatio;
+    const innerRadius = self.width / self.innerRadiusRatio;
 
     const color = self.colors ? d3.scale.ordinal().range(self.colors) : d3.scale.category20();
 
@@ -102,14 +108,14 @@ class DonutBuilder {
     const svg = d3.select(self.target)
       .append('svg')
       .attr({
-        width: (self.labels ? self.width * 2.3 : self.width),
+        width: (self.labels ? self.width * self.innerRadiusRatio : self.width),
         height: self.height,
         class: 'jsc-svg-container jsc-donut',
         style: 'background-color: ' + self.backgroundColor
       })
       .append('g')
       .attr({
-        transform: 'translate(' + ( self.labels ? ( self.width / 2 ) * 2.3 : self.width / 2 ) + ',' + self.height / 2 + ')'
+        transform: 'translate(' + ( self.labels ? ( self.width / 2 ) * self.innerRadiusRatio : self.width / 2 ) + ',' + self.height / 2 + ')'
       });
 
     const path = svg.selectAll('path')
@@ -200,16 +206,16 @@ class DonutBuilder {
         return `jsc-slice jsc-slice--${i}`;
       })
       .attr('stroke', function(d, i) {
-        return i == 0 ? this.getAttribute('fill') : self.backgroundColor;
+        return i == 0 ? this.getAttribute('fill') : self.strokeColor;
       })
       .attr('stroke-width', function(d, i) {
-        return i == 0 ? 4  : 5;
+        return i == 0 ? self.initialStrokeWidth : self.strokeWidth;
       })
       .on(self.selectevent, debounce(function() {
-        self.selecthandler.apply(this, [self, svg, ...arguments]);
+        self.selecthandler.apply(this, [self, slicestore, svg, ...arguments]);
       }, 100))
       .on(self.selectblurevent, debounce(function() {
-        self.selectblurhandler.apply(this, [self, svg, ...arguments]);
+        self.selectblurhandler.apply(this, [self, slicestore, svg, ...arguments]);
       }, 100));
 
     if (self.labels) {
@@ -233,12 +239,12 @@ class DonutBuilder {
         .on(self.selectevent, debounce(function(d, i) {
           const slice = svg.select(`.jsc-slice--${i}`);
 
-          self.selecthandler.apply(slice[0][0], [d, i], svg);
+          self.selecthandler.apply(slice[0][0], [self, slicestore, d, i, svg]);
         }, 100))
         .on(self.selectblurevent, debounce(function(d, i) {
           const slice = svg.select(`.jsc-slice--${i}`);
 
-          self.selectblurhandler.apply(slice[0][0], [d, i], svg);
+          self.selectblurhandler.apply(slice[0][0], [self, slicestore, d, i, svg]);
         }, 100));
 
       text.attr('transform', function(d) {

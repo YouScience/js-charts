@@ -2,7 +2,7 @@
   "name": "js-charts",
   "version": "1.0.0",
   "description": "js-charts is a YouScience JavaScript library that allows developers to easily add charts to web apps.",
-  "main": "jsc.js",
+  "main": "index.js",
   "scripts": {
     "test": "./test.sh",
     "build": "./build.sh"
@@ -17,9 +17,11 @@
     "url": "https://github.com/YouScience/js-charts/issues"
   },
   "homepage": "https://github.com/YouScience/js-charts#readme",
+  "dependencies": {
+    "d3": "^3.3.13"
+  },
   "devDependencies": {
     "qunit": "^2.4.0",
-    "d3": "^3.3.13",
     "node-qunit-phantomjs": "^1.5.0"
   }
 }

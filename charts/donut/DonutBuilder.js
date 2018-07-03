@@ -85,10 +85,15 @@ class DonutBuilder {
     return result;
   }
 
+  getColors(data) {
+    return data.map(datum => datum.color);
+  }
+
   create(data = []) {
     const self = this;
 
     data = data.sort((a, b) => (a.percent < b.percent));
+    const colors = this.colors ? this.colors : self.getColors(data);
 
     const pie = d3.layout.pie()
       .value(function(d) {

@@ -93,7 +93,7 @@ class DonutBuilder {
     const self = this;
 
     data = data.sort((a, b) => (a.percent < b.percent));
-    const colors = this.colors ? this.colors : self.getColors(data);
+    const colors = self.colors ? self.colors : self.getColors(data);
 
     const pie = d3.layout.pie()
       .value(function(d) {
@@ -104,7 +104,7 @@ class DonutBuilder {
     const outerRadius = self.width / self.outerRadiusRatio;
     const innerRadius = self.width / self.innerRadiusRatio;
 
-    const color = self.colors ? d3.scale.ordinal().range(self.colors) : d3.scale.category20();
+    const color = colors ? d3.scale.ordinal().range(colors) : d3.scale.category20();
 
     const arc = d3.svg.arc()
       .outerRadius(outerRadius)

@@ -26,7 +26,8 @@ class DonutBuilder {
   }
 
   selecthandler(self, slicestore, svg, d, i) {
-    this.parentElement.insertBefore(this, this.parentElement.firstChild);
+    console.log(this, this.parentNode, self);
+    this.parentNode.insertBefore(this, this.parentNode.firstChild);
 
     svg.selectAll('.jsc-slice')
       .attr('stroke-width', self.strokeWidth)

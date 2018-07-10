@@ -1,5 +1,7 @@
-const d3 = require('d3');
-const { debounce } = require('../../utils');
+import d3 from 'd3';
+import utils from '../../utils/index.js';
+
+const { debounce } = utils;
 
 class DonutBuilder {
   constructor(options = {}) {
@@ -298,4 +300,4 @@ class DonutBuilder {
   };
 }
 
-module.exports = DonutBuilder;
+export default DonutBuilder;

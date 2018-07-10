@@ -28,7 +28,6 @@ class DonutBuilder {
   }
 
   selecthandler(self, slicestore, svg, d, i) {
-    console.log(this, this.parentNode, self);
     this.parentNode.insertBefore(this, this.parentNode.firstChild);
 
     svg.selectAll('.jsc-slice')

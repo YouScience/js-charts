@@ -23,6 +23,6 @@ const debounce = (func, wait, immediate) => {
   };
 };
 
-module.exports = {
+export default {
   debounce,
 };

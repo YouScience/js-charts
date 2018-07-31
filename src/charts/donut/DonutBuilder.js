@@ -114,16 +114,15 @@ class DonutBuilder {
 
     const svg = d3.select(self.target)
       .append('svg')
+      .attr("width", '100%')
+      .attr("height", '100%')
+      .attr('viewBox', (-self.width / 2) + ' ' + (-self.height / 2) + ' ' + self.width + ' ' + self.height)
+      .attr('preserveAspectRatio', 'xMinYMin')
       .attr({
-        width: (self.labels ? self.width * self.innerRadiusRatio : self.width),
-        height: self.height,
         class: 'jsc-svg-container jsc-donut',
         style: 'background-color: ' + self.backgroundColor
       })
       .append('g')
-      .attr({
-        transform: 'translate(' + ( self.labels ? ( self.width / 2 ) * self.innerRadiusRatio : self.width / 2 ) + ',' + self.height / 2 + ')'
-      });
 
     const path = svg.selectAll('path')
       .data(pie(data))

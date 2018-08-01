@@ -10,7 +10,7 @@ Install package dependencies.
 npm install
 ```
 
-Build the project. Output distribution file path is `./dist/jsc.js`.
+Build the project. Output distribution file path is `./dist/js-charts.js`.
 
 ```
 npm run build
@@ -25,6 +25,8 @@ npm test
 ## External Dependencies
 
 Running js-charts on your site requires D3.js 3.3.x.
+
+# TODO: Update this!
 
 ## Usage
 

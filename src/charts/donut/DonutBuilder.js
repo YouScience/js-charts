@@ -3,6 +3,8 @@ import utils from '../../utils/index.js';
 
 const { debounce } = utils;
 
+const jsClass = '.jsc-slice';
+
 class DonutBuilder {
   constructor(options = {}) {
     this.target = options.target;
@@ -13,6 +15,8 @@ class DonutBuilder {
     this.backgroundColor = options.backgroundColor || '#FFFFFF';
     this.width = options.size || 300;
     this.height = options.size || 300;
+    this.highlightOnHover = options.highlightOnHover || false;
+    this.hoverStrokeWidth = options.hoverStrokeWidth || 4;
     this.selectevent = options.selectevent || 'mouseenter';
     this.selectblurevent = options.selectblurevent || 'mouseleave';
     this.onselect = options.onselect || (() => {});
@@ -27,34 +31,24 @@ class DonutBuilder {
     this.activeShadow = options.activeShadow || false;
   }
 
-  selecthandler(self, slicestore, svg, d, i) {
-    this.parentNode.insertBefore(this, this.parentNode.firstChild);
-
-    svg.selectAll('.jsc-slice')
-      .attr('stroke-width', self.strokeWidth)
-      .attr('stroke', self.strokeColor);
-
-    d3.select(this)
-      .attr('stroke-width', self.initialStrokeWidth)
-      .attr('stroke', function() {
-        return this.getAttribute('fill');
-      });
-
-    if (!self.title) {
-      svg.selectAll('.jsc-text')
-        .attr('visibility', 'hidden');
-
-      svg.selectAll(`.jsc-text--${i}`)
-        .attr('visibility', 'visible');
-    }
-
-    self.selectSlice(slicestore, i);
-
-    self.onselect.call(svg, self.findSlice(slicestore, i));
+  onMouseEnterHandler(slice) {
+    this.unhighlightInactiveSlices();
+    this.highlightSlice(slice, this.hoverStrokeWidth, false);
   }
 
-  selectblurhandler(self, slicestore, svg, d, i) {
-    self.onselectblur.call(svg, self.findSlice(slicestore, i));
+  onSelectHandler(slice, _data, index) {
+    this.selectSlice(index);
+
+    this.unhighlightSlices();
+    this.highlightSlice(slice, this.initialStrokeWidth);
+
+    this.onselect.call(this.svg, this.findActiveSlice());
+  }
+
+  onSelectBlurHandler(_slice, _data, index) {
+    this.unhighlightInactiveSlices();
+
+    this.onselectblur.call(this.svg, this.findSlice(index));
   }
 
   fontPx(value) {
@@ -69,17 +63,29 @@ class DonutBuilder {
     return d.startAngle + (d.endAngle - d.startAngle) / 2;
   }
 
-  selectSlice(slicestore, sliceIndex) {
-    slicestore.forEach((slice, index) => {
+  selectSlice(sliceIndex) {
+    this.slicestore.forEach((slice) => {
       slice.selected = ( slice.index === sliceIndex );
     });
   }
 
-  findSlice(slicestore, sliceIndex) {
+  findSlice(sliceIndex) {
     let result = null;
 
-    slicestore.forEach((slice, index) => {
+    this.slicestore.forEach((slice) => {
       if ( slice.index === sliceIndex ) {
+        result = slice
+      }
+    });
+
+    return result;
+  }
+
+  findActiveSlice() {
+    let result = null;
+
+    this.slicestore.forEach((slice) => {
+      if (slice.selected) {
         result = slice
       }
     });
@@ -193,23 +199,20 @@ class DonutBuilder {
     }
 
     let slicestore = [];
-    let colorstore = {};
 
-    path.attr('fill', function(d, i) {
-        const fill = color(i);
-        colorstore[i] = fill;
+    self.slicestore = slicestore;
+    self.svg = svg;
 
-        return fill;
-      })
-      .attr('class', function(d, i) {
+    path
+      .attr('class', function(_, i) {
         slicestore.push({
           index: i,
           selected: ( 0 == i ),
           data: data[i],
-          fill: colorstore[i]
+          fill: color(i),
         });
 
-        return `jsc-slice jsc-slice--${i}`;
+        return `u-clickable jsc-slice jsc-slice--${i}`;
       })
       .attr('stroke', function(d, i) {
         return i == 0 ? this.getAttribute('fill') : self.strokeColor;
@@ -217,11 +220,16 @@ class DonutBuilder {
       .attr('stroke-width', function(d, i) {
         return i == 0 ? self.initialStrokeWidth : self.strokeWidth;
       })
+      .on('mouseenter', debounce(function() {
+        if (self.highlightOnHover) {
+          self.onMouseEnterHandler.apply(self, [this]);
+        }
+      }, 100))
       .on(self.selectevent, debounce(function() {
-        self.selecthandler.apply(this, [self, slicestore, svg, ...arguments]);
+        self.onSelectHandler.apply(self, [this, ...arguments]);
       }, 100))
       .on(self.selectblurevent, debounce(function() {
-        self.selectblurhandler.apply(this, [self, slicestore, svg, ...arguments]);
+        self.onSelectBlurHandler.apply(self, [this, ...arguments])
       }, 100));
 
     if (self.labels) {
@@ -242,15 +250,15 @@ class DonutBuilder {
         .text(function(d) {
           return d.data.name;
         })
-        .on(self.selectevent, debounce(function(d, i) {
-          const slice = svg.select(`.jsc-slice--${i}`);
+        .on(self.selectevent, debounce(function(data, index) {
+          const [[slice]] = svg.select(`.jsc-slice--${index}`);
 
-          self.selecthandler.apply(slice[0][0], [self, slicestore, d, i, svg]);
+          self.onSelectHandler.apply(self, [slice, data, index]);
         }, 100))
-        .on(self.selectblurevent, debounce(function(d, i) {
-          const slice = svg.select(`.jsc-slice--${i}`);
+        .on(self.selectblurevent, debounce(function(data, index) {
+          const [[slice]] = svg.select(`.jsc-slice--${index}`);
 
-          self.selectblurhandler.apply(slice[0][0], [self, slicestore, d, i, svg]);
+          self.onSelectBlurHandler.apply(self, [slice, data, index]);
         }, 100));
 
       text.attr('transform', function(d) {
@@ -296,6 +304,55 @@ class DonutBuilder {
       slices: () => slicestore,
     };
   };
+
+  slices() {
+    return this.svg.selectAll(jsClass);
+  }
+
+  inactiveSlices() {
+    return this.inactive(this.slices())
+  }
+
+  unhighlightSlices() {
+    this.unhighligh(this.slices());
+  }
+
+  unhighlightInactiveSlices() {
+    this.unhighligh(this.inactiveSlices());
+  }
+
+  highlightSlice(slice, strokeWidth, includingActive = true) {
+    let sliceToUpdate = d3.select(slice);
+
+    if (!includingActive) {
+      sliceToUpdate = this.inactive(sliceToUpdate);
+    }
+
+    this.highlight(sliceToUpdate, strokeWidth, this.strokeColor);
+  }
+
+  // Highlight a group of slices. The bigger strokeWidth the smaller
+  // slice, the strokeColor is the color of the background.
+  highlight(slices, strokeWidth, strokeColor) {
+    slices
+      .attr('stroke-width', strokeWidth)
+      .attr('stroke', strokeColor);
+  }
+
+  // Reset a group of slices to their default properties (strokeWidth
+  // and strokeColor).
+  unhighligh(slices) {
+    slices
+      .attr('stroke-width', this.strokeWidth)
+      .attr('stroke', this.strokeColor);
+  }
+
+  inactive(slices) {
+    const activeSlice = this.findActiveSlice();
+
+    return slices.filter(({ data: { name }}) => name !== activeSlice.data.name);
+  }
+
 }
 
 export default DonutBuilder;

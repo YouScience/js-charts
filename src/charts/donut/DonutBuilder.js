@@ -32,21 +32,21 @@ class DonutBuilder {
   }
 
   onMouseEnterHandler(slice) {
-    this.unHighlightInactiveSlices();
+    this.unhighlightInactiveSlices();
     this.highlightSlice(slice, this.hoverStrokeWidth, false);
   }
 
   onSelectHandler(slice, _data, index) {
     this.selectSlice(index);
 
-    this.unHighlightSlices();
+    this.unhighlightSlices();
     this.highlightSlice(slice, this.initialStrokeWidth);
 
     this.onselect.call(this.svg, this.findActiveSlice());
   }
 
   onSelectBlurHandler(_slice, _data, index) {
-    this.unHighlightInactiveSlices();
+    this.unhighlightInactiveSlices();
 
     this.onselectblur.call(this.svg, this.findSlice(index));
   }
@@ -313,11 +313,11 @@ class DonutBuilder {
     return this.inactive(this.slices())
   }
 
-  unHighlightSlices() {
+  unhighlightSlices() {
     this.unhighligh(this.slices());
   }
 
-  unHighlightInactiveSlices() {
+  unhighlightInactiveSlices() {
     this.unhighligh(this.inactiveSlices());
   }
 
@@ -331,7 +331,7 @@ class DonutBuilder {
     this.highlight(sliceToUpdate, strokeWidth, this.strokeColor);
   }
 
-  // Highlight a group of slices. Bigger strokeWidth the smaller
+  // Highlight a group of slices. The Bbgger strokeWidth the smaller
   // slice, the strokeColor is the color of the background.
   highlight(slices, strokeWidth, strokeColor) {
     slices
@@ -339,7 +339,7 @@ class DonutBuilder {
       .attr('stroke', strokeColor);
   }
 
-  // Rest a group of slices to their default properties (strokeWidth
+  // Reset a group of slices to their default properties (strokeWidth
   // and strokeColor).
   unhighligh(slices) {
     slices

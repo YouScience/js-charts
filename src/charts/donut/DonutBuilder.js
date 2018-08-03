@@ -331,7 +331,7 @@ class DonutBuilder {
     this.highlight(sliceToUpdate, strokeWidth, this.strokeColor);
   }
 
-  // Highlight a group of slices. The Bbgger strokeWidth the smaller
+  // Highlight a group of slices. The bibgger strokeWidth the smaller
   // slice, the strokeColor is the color of the background.
   highlight(slices, strokeWidth, strokeColor) {
     slices

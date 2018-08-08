@@ -16,7 +16,7 @@ class DonutBuilder {
     this.width = options.size || 300;
     this.height = options.size || 300;
     this.highlightOnHover = options.highlightOnHover || false;
-    this.hoverStrokeWidth = options.hoverStrokeWidth || 4;
+    this.hoverStrokeWidth = options.hoverStrokeWidth || 6;
     this.selectevent = options.selectevent || 'mouseenter';
     this.selectblurevent = options.selectblurevent || 'mouseleave';
     this.onselect = options.onselect || (() => {});
@@ -24,11 +24,12 @@ class DonutBuilder {
     this.title = options.title;
     this.labels = options.labels;
     this.outerRadiusRatio = options.outerRadiusRatio || 3;
-    this.innerRadiusRatio = options.innerRadiusRatio || 2.3;
+    this.innerRadiusRatio = options.innerRadiusRatio || 2.5;
     this.strokeColor = options.strokeColor || '#FFFFFF';
-    this.strokeWidth = options.strokeWidth || 5;
-    this.initialStrokeWidth = options.initialStrokeWidth || 4;
+    this.strokeWidth = options.strokeWidth || 2;
+    this.initialStrokeWidth = options.initialStrokeWidth || 10;
     this.activeShadow = options.activeShadow || false;
+    this.padAngle = options.padAngle || 0.08;
   }
 
   onMouseEnterHandler(slice) {
@@ -116,7 +117,8 @@ class DonutBuilder {
 
     const arc = d3.svg.arc()
       .outerRadius(outerRadius)
-      .innerRadius(innerRadius);
+      .innerRadius(innerRadius)
+      .padAngle(self.padAngle);
 
     const svg = d3.select(self.target)
       .append('svg')
@@ -215,7 +217,7 @@ class DonutBuilder {
         return `u-clickable jsc-slice jsc-slice--${i}`;
       })
       .attr('stroke', function(d, i) {
-        return i == 0 ? this.getAttribute('fill') : self.strokeColor;
+        return this.getAttribute('fill');
       })
       .attr('stroke-width', function(d, i) {
         return i == 0 ? self.initialStrokeWidth : self.strokeWidth;
@@ -331,20 +333,15 @@ class DonutBuilder {
     this.highlight(sliceToUpdate, strokeWidth, this.strokeColor);
   }
 
-  // Highlight a group of slices. The bigger strokeWidth the smaller
-  // slice, the strokeColor is the color of the background.
+  // Highlight a group of slices. The bigger strokeWidth the bigger, the bigger
+  // the slice
   highlight(slices, strokeWidth, strokeColor) {
-    slices
-      .attr('stroke-width', strokeWidth)
-      .attr('stroke', strokeColor);
+    slices.attr('stroke-width', strokeWidth)
   }
 
-  // Reset a group of slices to their default properties (strokeWidth
-  // and strokeColor).
+  // Reset a group of slices to the default strokeWidth
   unhighligh(slices) {
-    slices
-      .attr('stroke-width', this.strokeWidth)
-      .attr('stroke', this.strokeColor);
+    slices.attr('stroke-width', this.strokeWidth)
   }
 
   inactive(slices) {

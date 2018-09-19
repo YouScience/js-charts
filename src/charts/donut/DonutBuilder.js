@@ -52,6 +52,14 @@ class DonutBuilder {
     this.onselectblur.call(this.svg, this.findSlice(index));
   }
 
+  triggerSelectHandler(sliceName) {
+    const sliceData = this.findSliceByName(sliceName);
+    if (!sliceData) return;
+
+    const slice = d3.select(`${jsClass}--${sliceData.index}`);
+    this.onSelectHandler(slice.node(), {}, sliceData.index);
+  }
+
   fontPx(value) {
     if ('number' != typeof value) {
       throw new Error('Invalid fontSize value');
@@ -75,6 +83,18 @@ class DonutBuilder {
 
     this.slicestore.forEach((slice) => {
       if ( slice.index === sliceIndex ) {
+        result = slice
+      }
+    });
+
+    return result;
+  }
+
+  findSliceByName(sliceName) {
+    let result = null;
+
+    this.slicestore.forEach((slice) => {
+      if (slice.data.name === sliceName) {
         result = slice
       }
     });

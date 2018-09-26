@@ -38,11 +38,7 @@ class DonutBuilder {
   }
 
   onSelectHandler(slice, _data, index) {
-    this.selectSlice(index);
-
-    this.unhighlightSlices();
-    this.highlightSlice(slice, this.initialStrokeWidth);
-
+    this.selectSlice(slice, index);
     this.onselect.call(this.svg, this.findActiveSlice());
   }
 
@@ -52,12 +48,19 @@ class DonutBuilder {
     this.onselectblur.call(this.svg, this.findSlice(index));
   }
 
-  triggerSelectHandler(sliceName) {
+  selectSliceByName(sliceName) {
     const sliceData = this.findSliceByName(sliceName);
     if (!sliceData) return;
 
     const slice = d3.select(`${jsClass}--${sliceData.index}`);
-    this.onSelectHandler(slice.node(), {}, sliceData.index);
+    this.selectSlice(slice.node(), sliceData.index);
+  }
+
+  selectSlice(slice, index) {
+    this.markSliceAsSelected(index);
+
+    this.unhighlightSlices();
+    this.highlightSlice(slice, this.initialStrokeWidth);
   }
 
   fontPx(value) {
@@ -72,7 +75,7 @@ class DonutBuilder {
     return d.startAngle + (d.endAngle - d.startAngle) / 2;
   }
 
-  selectSlice(sliceIndex) {
+  markSliceAsSelected(sliceIndex) {
     this.slicestore.forEach((slice) => {
       slice.selected = ( slice.index === sliceIndex );
     });
@@ -369,7 +372,6 @@ class DonutBuilder {
 
     return slices.filter(({ data: { name }}) => name !== activeSlice.data.name);
   }
-
 }
 
 export default DonutBuilder;

@@ -5,7 +5,14 @@ const { debounce } = utils;
 
 const jsClass = '.jsc-slice';
 
+const HIGHLIGTH_TYPES = {
+  NONE: 'none',
+  INCREASE_SIZE: 'increase_size',
+  ADD_BORDER: 'add_border'
+};
+
 class DonutBuilder {
+
   constructor(options = {}) {
     this.target = options.target;
     this.fontSize = options.fontSize || 38;
@@ -15,26 +22,29 @@ class DonutBuilder {
     this.backgroundColor = options.backgroundColor || '#FFFFFF';
     this.width = options.size || 300;
     this.height = options.size || 300;
-    this.highlightOnHover = options.highlightOnHover || false;
-    this.hoverStrokeWidth = options.hoverStrokeWidth || 6;
+
+    this.title = options.title;
+    this.labels = options.labels;
+
+    this.outerRadiusRatio = options.outerRadiusRatio || 2.5;
+    this.innerRadiusRatio = options.innerRadiusRatio || 4;
+    this.activeShadow = options.activeShadow || false;
+    this.padAngle = options.padAngle || 0.01;
+
+    this.onHoverEffect = options.onHoverEffect || HIGHLIGTH_TYPES.NONE;
+    this.onSelectEffect = options.onSelectEffect || HIGHLIGTH_TYPES.INCREASE_SIZE;
+    this.borderOpacity = options.borderOpacity || 0.4;
+    this.increaseRadiusStep = options.increaseRadiusStep || 7;
+
     this.selectevent = options.selectevent || 'mouseenter';
     this.selectblurevent = options.selectblurevent || 'mouseleave';
     this.onselect = options.onselect || (() => {});
     this.onselectblur = options.onselectblur || (() => {});
-    this.title = options.title;
-    this.labels = options.labels;
-    this.outerRadiusRatio = options.outerRadiusRatio || 3;
-    this.innerRadiusRatio = options.innerRadiusRatio || 2.5;
-    this.strokeColor = options.strokeColor || '#FFFFFF';
-    this.strokeWidth = options.strokeWidth || 2;
-    this.initialStrokeWidth = options.initialStrokeWidth || 10;
-    this.activeShadow = options.activeShadow || false;
-    this.padAngle = options.padAngle || 0.08;
   }
 
   onMouseEnterHandler(slice) {
     this.unhighlightInactiveSlices();
-    this.highlightSlice(slice, this.hoverStrokeWidth, false);
+    this.highlightSlice(slice, this.onHoverEffect);
   }
 
   onSelectHandler(slice, _data, index) {
@@ -44,7 +54,6 @@ class DonutBuilder {
 
   onSelectBlurHandler(_slice, _data, index) {
     this.unhighlightInactiveSlices();
-
     this.onselectblur.call(this.svg, this.findSlice(index));
   }
 
@@ -60,7 +69,7 @@ class DonutBuilder {
     this.markSliceAsSelected(index);
 
     this.unhighlightSlices();
-    this.highlightSlice(slice, this.initialStrokeWidth);
+    this.highlightSlice(slice, this.onSelectEffect);
   }
 
   fontPx(value) {
@@ -133,14 +142,14 @@ class DonutBuilder {
       })
       .sort(null);
 
-    const outerRadius = self.width / self.outerRadiusRatio;
-    const innerRadius = self.width / self.innerRadiusRatio;
+    self.outerRadius = self.width / self.outerRadiusRatio;
+    self.innerRadius = self.width / self.innerRadiusRatio;
 
     const color = colors ? d3.scale.ordinal().range(colors) : d3.scale.category20();
 
     const arc = d3.svg.arc()
-      .outerRadius(outerRadius)
-      .innerRadius(innerRadius)
+      .outerRadius(self.outerRadius)
+      .innerRadius(self.innerRadius)
       .padAngle(self.padAngle);
 
     const svg = d3.select(self.target)
@@ -165,6 +174,33 @@ class DonutBuilder {
           return color(d.data.name);
         },
       });
+
+
+    if (this.onHoverEffect === HIGHLIGTH_TYPES.ADD_BORDER ||
+        this.onSelectEffect === HIGHLIGTH_TYPES.ADD_BORDER) {
+
+      const borderArc = d3.svg.arc()
+        .outerRadius(self.outerRadius + this.increaseRadiusStep)
+        .innerRadius(self.outerRadius + 1)
+        .padAngle(self.padAngle);
+
+      const borderPath = svg.selectAll('path.outer-arc')
+        .data(pie(data))
+        .enter()
+        .append('path')
+        .attr({
+          class: 'outer-arc',
+          d: borderArc,
+          fill: function(d, i) {
+            return color(d.data.name);
+          },
+          opacity: 0
+        });
+
+      borderPath.attr('class', function(_, i) {
+        return `u-clickable jsc-slice-border jsc-slice--${i}`
+      })
+    }
 
     const legend = svg.selectAll('.legend')
       .data(color.domain())
@@ -239,16 +275,8 @@ class DonutBuilder {
 
         return `u-clickable jsc-slice jsc-slice--${i}`;
       })
-      .attr('stroke', function(d, i) {
-        return this.getAttribute('fill');
-      })
-      .attr('stroke-width', function(d, i) {
-        return i == 0 ? self.initialStrokeWidth : self.strokeWidth;
-      })
       .on('mouseenter', debounce(function() {
-        if (self.highlightOnHover) {
-          self.onMouseEnterHandler.apply(self, [this]);
-        }
+        self.onMouseEnterHandler.apply(self, [this]);
       }, 100))
       .on(self.selectevent, debounce(function() {
         self.onSelectHandler.apply(self, [this, ...arguments]);
@@ -334,43 +362,73 @@ class DonutBuilder {
     return this.svg.selectAll(jsClass);
   }
 
+  borderSlices() {
+    return this.svg.selectAll('.jsc-slice-border')
+  }
+
   inactiveSlices() {
     return this.inactive(this.slices())
   }
 
+  inactiveBorderSlices() {
+    return this.inactive(this.borderSlices());
+  }
+
   unhighlightSlices() {
     this.unhighligh(this.slices());
+    this.borderSlices().attr('opacity', 0);
   }
 
   unhighlightInactiveSlices() {
     this.unhighligh(this.inactiveSlices());
+    this.inactiveBorderSlices().attr('opacity', 0);
   }
 
-  highlightSlice(slice, strokeWidth, includingActive = true) {
-    let sliceToUpdate = d3.select(slice);
-
-    if (!includingActive) {
-      sliceToUpdate = this.inactive(sliceToUpdate);
+  highlightSlice(slice, highlightEffect) {
+    switch(highlightEffect) {
+      case HIGHLIGTH_TYPES.ADD_BORDER:
+        this.addBorderToSlice(slice);
+        break;
+      case HIGHLIGTH_TYPES.INCREASE_SIZE:
+        this.increaseSliceSize(slice)
+        break;
     }
-
-    this.highlight(sliceToUpdate, strokeWidth, this.strokeColor);
   }
 
-  // Highlight a group of slices. The bigger strokeWidth the bigger, the bigger
-  // the slice
-  highlight(slices, strokeWidth, strokeColor) {
-    slices.attr('stroke-width', strokeWidth)
+  addBorderToSlice(slice) {
+    let sliceClass = d3.select(slice).attr('class');
+    d3.select(this.borderClassSelector(sliceClass)).attr('opacity', this.borderOpacity);
   }
 
-  // Reset a group of slices to the default strokeWidth
+  increaseSliceSize(slice) {
+    let widerArc =  d3.svg.arc()
+      .innerRadius(this.innerRadius)
+      .outerRadius(this.outerRadius + this.increaseRadiusStep)
+      .padAngle(this.padAngle);
+    d3.select(slice).transition().attr('d', widerArc);
+  }
+
+  // Reset a group of slices to the default arc width
   unhighligh(slices) {
-    slices.attr('stroke-width', this.strokeWidth)
+    let defaultArc = d3.svg.arc()
+      .innerRadius(this.innerRadius)
+      .outerRadius(this.outerRadius)
+      .padAngle(this.padAngle);
+
+    slices.transition().attr('d', defaultArc);
   }
 
   inactive(slices) {
     const activeSlice = this.findActiveSlice();
 
     return slices.filter(({ data: { name }}) => name !== activeSlice.data.name);
+  }
+
+  borderClassSelector(sliceClass) {
+    let borderClass = sliceClass.replace('jsc-slice', 'jsc-slice-border');
+    borderClass = borderClass.replace(/ /g, '.');
+
+    return '.' + borderClass;
   }
 }
 

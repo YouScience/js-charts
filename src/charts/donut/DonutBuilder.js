@@ -11,6 +11,18 @@ const HIGHLIGTH_TYPES = {
   ADD_BORDER: 'add_border'
 };
 
+const defaultTooltipStyle = {
+  'background': 'lightsteelblue',
+  'border': '0px',
+  'border-radius': '0.75em',
+  'display': 'inline-block',
+  'padding': '0.5em',
+  'pointer-events': 'none',
+  'position': 'absolute',
+  'text-align': 'center',
+  'z-index': 2
+};
+
 class DonutBuilder {
 
   constructor(options = {}) {
@@ -25,11 +37,13 @@ class DonutBuilder {
 
     this.title = options.title;
     this.labels = options.labels;
+    this.tooltips = options.tooltips;
 
     this.outerRadiusRatio = options.outerRadiusRatio || 2.5;
     this.innerRadiusRatio = options.innerRadiusRatio || 4;
     this.activeShadow = options.activeShadow || false;
     this.padAngle = options.padAngle || 0.01;
+    this.tooltipStyle = options.tooltipStyle || null;
 
     this.onHoverEffect = options.onHoverEffect || HIGHLIGTH_TYPES.NONE;
     this.onSelectEffect = options.onSelectEffect || HIGHLIGTH_TYPES.INCREASE_SIZE;
@@ -154,8 +168,8 @@ class DonutBuilder {
 
     const svg = d3.select(self.target)
       .append('svg')
-      .attr("width", '100%')
-      .attr("height", '100%')
+      .attr('width', '100%')
+      .attr('height', '100%')
       .attr('viewBox', (-self.width / 2) + ' ' + (-self.height / 2) + ' ' + self.width + ' ' + self.height)
       .attr('preserveAspectRatio', 'xMinYMin')
       .attr({
@@ -174,7 +188,6 @@ class DonutBuilder {
           return color(d.data.name);
         },
       });
-
 
     if (this.onHoverEffect === HIGHLIGTH_TYPES.ADD_BORDER ||
         this.onSelectEffect === HIGHLIGTH_TYPES.ADD_BORDER) {
@@ -284,6 +297,31 @@ class DonutBuilder {
       .on(self.selectblurevent, debounce(function() {
         self.onSelectBlurHandler.apply(self, [this, ...arguments])
       }, 100));
+
+    if (self.tooltips) {
+      const div = d3.select(self.target).append('div');
+
+      if (self.tooltipStyle) {
+        div.attr('class', self.tooltipStyle)
+      } else {
+        div.style(defaultTooltipStyle);
+      }
+
+      path.on('mouseover', function(d) {
+        div.transition()
+          .duration(200)
+          .style('opacity', 1);
+
+        div.html(d.data.contentTooltip)
+          .style('left', (d3.event.pageX) + 'px')
+          .style('top', (d3.event.pageY - 30) + 'px');
+      })
+      .on('mouseout', function(d) {
+        div.transition()
+          .duration(500)
+          .style('opacity', 0);
+      })
+    }
 
     if (self.labels) {
       const labels = svg.append('svg:g')

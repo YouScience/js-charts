@@ -23,6 +23,10 @@ const defaultTooltipStyle = {
   'z-index': 2
 };
 
+const tooltipTransitionDuration = 300;
+
+const tooltipVerticalMargin = 30;
+
 class DonutBuilder {
 
   constructor(options = {}) {
@@ -307,18 +311,18 @@ class DonutBuilder {
         div.style(defaultTooltipStyle);
       }
 
-      path.on('mouseover', function(d) {
+      path.on('mouseover', ({ data: { contentTooltip } }) => {
         div.transition()
-          .duration(200)
+          .duration(tooltipTransitionDuration)
           .style('opacity', 1);
 
-        div.html(d.data.contentTooltip)
-          .style('left', (d3.event.pageX) + 'px')
-          .style('top', (d3.event.pageY - 30) + 'px');
+        div.html(contentTooltip)
+          .style('left', `${d3.event.pageX}px`)
+          .style('top', `${d3.event.pageY - tooltipVerticalMargin}px`);
       })
-      .on('mouseout', function(d) {
+      .on('mouseout', () => {
         div.transition()
-          .duration(500)
+          .duration(tooltipTransitionDuration)
           .style('opacity', 0);
       })
     }
